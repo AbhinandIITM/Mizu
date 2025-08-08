@@ -3,37 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gemini Image Captioning</title>
+  <title>Plivo-chan | Image Summariser</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5f7fa;
+      font-family: 'Inter', sans-serif;
+      background: #f0f2f5;
       color: #333;
-      padding: 0;
       margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1f2937;
+      color: white;
+      padding: 1rem 2rem;
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      min-height: 100vh;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 2rem;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
     }
 
     .container {
+      max-width: 700px;
+      margin: 2rem auto;
       background: white;
       padding: 2rem;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
     }
 
     h2 {
-      margin-bottom: 1.5rem;
-      color: #2c3e50;
+      color: #1f2937;
+      margin-bottom: 1rem;
     }
 
     input[type="file"] {
@@ -41,25 +62,24 @@
     }
 
     button {
-      background: #007bff;
+      background: #2563eb;
       color: white;
       padding: 0.6rem 1.2rem;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 1rem;
-      margin-top: 0.5rem;
       transition: background 0.3s ease;
     }
 
     button:hover {
-      background: #0056b3;
+      background: #1d4ed8;
     }
 
     #description {
       margin-top: 1.5rem;
       font-style: italic;
-      color: #444;
+      color: #374151;
       white-space: pre-line;
     }
 
@@ -68,17 +88,38 @@
       font-size: 0.95rem;
       color: #999;
     }
+
+    footer {
+      text-align: center;
+      margin-top: 4rem;
+      padding: 2rem;
+      color: #777;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Image Captioning with Gemini</h2>
+  <header>
+    <h1>Plivo-chan</h1>
+    <nav>
+      <a href="#">Image Summariser</a>
+      <a href="#">Conversation Analysis</a>
+      <a href="#">Doc Analysis</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h2>Upload an Image</h2>
     <input type="file" id="imageInput" accept="image/*" />
     <br />
     <button onclick="uploadImage()">Describe</button>
     <div id="loading"></div>
     <p id="description"></p>
-  </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Plivo-chan. All rights reserved.
+  </footer>
 
   <script>
     async function uploadImage() {

@@ -12,7 +12,6 @@ import os
 genai.configure(api_key="AIzaSyAvmUQ14VQR9Eawla6aCZjvv0f5Ye_2ECA")
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 model = genai.GenerativeModel("gemini-2.5-flash")
