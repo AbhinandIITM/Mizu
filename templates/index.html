@@ -92,7 +92,8 @@
       max-width: 100%;             /* respect container width */
       box-sizing: border-box;
       font-family: monospace;
-      word-break: break-word;
+      max-height: 400px;           /* limit height with scroll */
+      overflow-y: auto;
     }
 
     #description h3, #doc-summary h3, #audio-transcript h3 {
@@ -179,7 +180,7 @@
       document.getElementById('doc-loading').innerText = "";
       document.getElementById('doc-summary').innerHTML = "";
       document.getElementById('audio-loading').innerText = "";
-      document.getElementById('audio-transcript').innerHTML = "";
+      document.getElementById('audio-transcript').textContent = "";
     }
 
     function formatDescription(text) {
@@ -293,7 +294,7 @@
       const transcriptDiv = document.getElementById('audio-transcript');
 
       if (!fileInput.files.length) {
-        transcriptDiv.innerHTML = "<p>Please select an audio file first.</p>";
+        transcriptDiv.textContent = "Please select an audio file first.";
         return;
       }
 
@@ -301,8 +302,8 @@
       const formData = new FormData();
       formData.append("file", file);
 
-      loading.innerText = "Transcribing audio...";
-      transcriptDiv.innerHTML = "";
+      loading.textContent = "Transcribing audio...";
+      transcriptDiv.textContent = "";
 
       try {
         const res = await fetch("/analyze-audio", {
@@ -311,15 +312,15 @@
         });
 
         const data = await res.json();
-        loading.innerText = "";
+        loading.textContent = "";
 
         if (data.transcript) {
-          transcriptDiv.innerHTML = `<pre>${data.transcript}</pre>`;
+          transcriptDiv.textContent = data.transcript;
         } else {
           transcriptDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
         }
       } catch (err) {
-        loading.innerText = "";
+        loading.textContent = "";
         transcriptDiv.innerHTML = "<p style='color:red;'>An error occurred while transcribing the audio.</p>";
       }
     }
