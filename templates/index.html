@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Plivo-chan | AI Assistant</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     * {
       box-sizing: border-box;
@@ -77,7 +77,7 @@
       background: #1d4ed8;
     }
 
-    #description {
+    #description, #doc-summary, #audio-transcript {
       margin-top: 2rem;
       background: #f9fafb;
       padding: 1.5rem;
@@ -86,23 +86,30 @@
       font-size: 1rem;
       color: #374151;
       line-height: 1.7;
+      white-space: pre-wrap;       /* retain line breaks, wrap lines */
+      word-break: break-word;      /* break long words if needed */
+      overflow-wrap: break-word;   /* additional word wrapping */
+      max-width: 100%;             /* respect container width */
+      box-sizing: border-box;
+      font-family: monospace;
+      word-break: break-word;
     }
 
-    #description h3 {
+    #description h3, #doc-summary h3, #audio-transcript h3 {
       margin-top: 1.5rem;
       color: #111827;
       font-size: 1.25rem;
     }
 
-    #description ul {
+    #description ul, #doc-summary ul, #audio-transcript ul {
       margin-left: 1.5rem;
     }
 
-    #description li {
+    #description li, #doc-summary li, #audio-transcript li {
       margin-bottom: 0.5rem;
     }
 
-    #loading {
+    #loading, #doc-loading, #audio-loading {
       margin-top: 1rem;
       font-size: 0.95rem;
       color: #999;
@@ -123,6 +130,7 @@
     <nav>
       <a onclick="showSection('image')">Image Summariser</a>
       <a onclick="showSection('doc')">Doc Analysis</a>
+      <a onclick="showSection('audio')">Audio Analysis</a>
     </nav>
   </header>
 
@@ -144,6 +152,15 @@
       <div id="doc-loading"></div>
       <div id="doc-summary"></div>
     </div>
+
+    <div id="audio-section" style="display:none;">
+      <h2>Upload an Audio File</h2>
+      <input type="file" id="audioInput" accept="audio/*" />
+      <br />
+      <button onclick="uploadAudio()">Transcribe</button>
+      <div id="audio-loading"></div>
+      <div id="audio-transcript"></div>
+    </div>
   </main>
 
   <footer>
@@ -152,8 +169,17 @@
 
   <script>
     function showSection(type) {
-      document.getElementById('image-section').style.display = type === 'image' ? 'block' : 'none';
-      document.getElementById('doc-section').style.display = type === 'doc' ? 'block' : 'none';
+      document.getElementById('image-section').style.display = (type === 'image') ? 'block' : 'none';
+      document.getElementById('doc-section').style.display = (type === 'doc') ? 'block' : 'none';
+      document.getElementById('audio-section').style.display = (type === 'audio') ? 'block' : 'none';
+
+      // Clear loading and result areas when switching
+      document.getElementById('loading').innerText = "";
+      document.getElementById('description').innerHTML = "";
+      document.getElementById('doc-loading').innerText = "";
+      document.getElementById('doc-summary').innerHTML = "";
+      document.getElementById('audio-loading').innerText = "";
+      document.getElementById('audio-transcript').innerHTML = "";
     }
 
     function formatDescription(text) {
@@ -258,6 +284,43 @@
       } catch (err) {
         loading.innerText = "";
         summary.innerHTML = "<p style='color:red;'>An error occurred while processing the PDF.</p>";
+      }
+    }
+
+    async function uploadAudio() {
+      const fileInput = document.getElementById('audioInput');
+      const loading = document.getElementById('audio-loading');
+      const transcriptDiv = document.getElementById('audio-transcript');
+
+      if (!fileInput.files.length) {
+        transcriptDiv.innerHTML = "<p>Please select an audio file first.</p>";
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      loading.innerText = "Transcribing audio...";
+      transcriptDiv.innerHTML = "";
+
+      try {
+        const res = await fetch("/analyze-audio", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        loading.innerText = "";
+
+        if (data.transcript) {
+          transcriptDiv.innerHTML = `<pre>${data.transcript}</pre>`;
+        } else {
+          transcriptDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+        }
+      } catch (err) {
+        loading.innerText = "";
+        transcriptDiv.innerHTML = "<p style='color:red;'>An error occurred while transcribing the audio.</p>";
       }
     }
   </script>
