@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gemini Image Captioning</title>
+</head>
+<body>
+  <h2>Upload Image</h2>
+  <input type="file" id="imageInput" />
+  <button onclick="uploadImage()">Describe</button>
+  <p id="description"></p>
+
+  <script>
+    async function uploadImage() {
+      const file = document.getElementById('imageInput').files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/describe", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      document.getElementById("description").innerText = data.description || data.error;
+    }
+  </script>
+</body>
+</html>
