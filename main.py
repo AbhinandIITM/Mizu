@@ -9,13 +9,13 @@ import os
 # from dotenv import load_dotenv
 
 # load_dotenv()
-genai.configure(api_key=os.getenv("AIzaSyDOTTXTU9saFnAFWv4w3lU7cO6AdeiFNiA"))
+genai.configure(api_key="AIzaSyAvmUQ14VQR9Eawla6aCZjvv0f5Ye_2ECA")
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-model = genai.GenerativeModel("gemini-1.5-pro")
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 @app.get("/", response_class=HTMLResponse)
 def serve_home(request: Request):

@@ -1,27 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gemini Image Captioning</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #2c3e50;
+    }
+
+    input[type="file"] {
+      margin-bottom: 1rem;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    #description {
+      margin-top: 1.5rem;
+      font-style: italic;
+      color: #444;
+      white-space: pre-line;
+    }
+
+    #loading {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: #999;
+    }
+  </style>
 </head>
 <body>
-  <h2>Upload Image</h2>
-  <input type="file" id="imageInput" />
-  <button onclick="uploadImage()">Describe</button>
-  <p id="description"></p>
+  <div class="container">
+    <h2>Image Captioning with Gemini</h2>
+    <input type="file" id="imageInput" accept="image/*" />
+    <br />
+    <button onclick="uploadImage()">Describe</button>
+    <div id="loading"></div>
+    <p id="description"></p>
+  </div>
 
   <script>
     async function uploadImage() {
-      const file = document.getElementById('imageInput').files[0];
+      const fileInput = document.getElementById('imageInput');
+      const loading = document.getElementById('loading');
+      const desc = document.getElementById('description');
+
+      if (!fileInput.files.length) {
+        desc.innerText = "Please select an image first.";
+        return;
+      }
+
+      const file = fileInput.files[0];
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch("/describe", {
-        method: "POST",
-        body: formData
-      });
+      loading.innerText = "Processing image...";
+      desc.innerText = "";
 
-      const data = await res.json();
-      document.getElementById("description").innerText = data.description || data.error;
+      try {
+        const res = await fetch("/describe", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        loading.innerText = "";
+        desc.innerText = data.description || data.error;
+      } catch (err) {
+        loading.innerText = "";
+        desc.innerText = "An error occurred while processing.";
+      }
     }
   </script>
 </body>
