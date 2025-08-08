@@ -1,5 +1,7 @@
 fastapi
-uvicorn
-pillow
+uvicorn[standard]
+python-multipart
+aiofiles
 jinja2
-google-generativeai
+requests
+pillow
