@@ -5,3 +5,4 @@ aiofiles
 jinja2
 requests
 pillow
+google-generativeai
