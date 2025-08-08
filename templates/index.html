@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plivo-chan | Image Summariser</title>
+  <title>Plivo-chan | AI Assistant</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -37,6 +37,7 @@
       text-decoration: none;
       margin-left: 2rem;
       font-weight: 500;
+      cursor: pointer;
     }
 
     nav a:hover {
@@ -120,19 +121,29 @@
   <header>
     <h1>Plivo-chan</h1>
     <nav>
-      <a href="#">Image Summariser</a>
-      <a href="#">Conversation Analysis</a>
-      <a href="#">Doc Analysis</a>
+      <a onclick="showSection('image')">Image Summariser</a>
+      <a onclick="showSection('doc')">Doc Analysis</a>
     </nav>
   </header>
 
   <main class="container">
-    <h2>Upload an Image</h2>
-    <input type="file" id="imageInput" accept="image/*" />
-    <br />
-    <button onclick="uploadImage()">Describe</button>
-    <div id="loading"></div>
-    <div id="description"></div>
+    <div id="image-section">
+      <h2>Upload an Image</h2>
+      <input type="file" id="imageInput" accept="image/*" />
+      <br />
+      <button onclick="uploadImage()">Describe</button>
+      <div id="loading"></div>
+      <div id="description"></div>
+    </div>
+
+    <div id="doc-section" style="display:none;">
+      <h2>Upload a PDF Document</h2>
+      <input type="file" id="pdfInput" accept="application/pdf" />
+      <br />
+      <button onclick="uploadPDF()">Summarize</button>
+      <div id="doc-loading"></div>
+      <div id="doc-summary"></div>
+    </div>
   </main>
 
   <footer>
@@ -140,6 +151,11 @@
   </footer>
 
   <script>
+    function showSection(type) {
+      document.getElementById('image-section').style.display = type === 'image' ? 'block' : 'none';
+      document.getElementById('doc-section').style.display = type === 'doc' ? 'block' : 'none';
+    }
+
     function formatDescription(text) {
       const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
       let html = '';
@@ -147,14 +163,12 @@
 
       lines.forEach(line => {
         if (line.startsWith('**') && line.endsWith('**')) {
-          // Bold line as a heading
           if (inList) {
             html += '</ul>';
             inList = false;
           }
           html += `<h3>${line.replace(/\*\*/g, '')}</h3>`;
         } else if (line.startsWith('* ')) {
-          // Bullet point
           if (!inList) {
             html += '<ul>';
             inList = true;
@@ -207,6 +221,43 @@
       } catch (err) {
         loading.innerText = "";
         desc.innerHTML = "<p style='color:red;'>An error occurred while processing.</p>";
+      }
+    }
+
+    async function uploadPDF() {
+      const fileInput = document.getElementById('pdfInput');
+      const loading = document.getElementById('doc-loading');
+      const summary = document.getElementById('doc-summary');
+
+      if (!fileInput.files.length) {
+        summary.innerHTML = "<p>Please select a PDF file first.</p>";
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      loading.innerText = "Summarizing document...";
+      summary.innerHTML = "";
+
+      try {
+        const res = await fetch("/analyze-pdf", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        loading.innerText = "";
+
+        if (data.summary) {
+          summary.innerHTML = formatDescription(data.summary);
+        } else {
+          summary.innerHTML = `<p style="color: red;">${data.error}</p>`;
+        }
+      } catch (err) {
+        loading.innerText = "";
+        summary.innerHTML = "<p style='color:red;'>An error occurred while processing the PDF.</p>";
       }
     }
   </script>
