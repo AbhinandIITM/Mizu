@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plivo-chan | AI Assistant</title>
+  <title>AI Assistant</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     * {
@@ -86,28 +86,22 @@
       font-size: 1rem;
       color: #374151;
       line-height: 1.7;
-      white-space: pre-wrap;       /* retain line breaks, wrap lines */
-      word-break: break-word;      /* break long words if needed */
-      overflow-wrap: break-word;   /* additional word wrapping */
-      max-width: 100%;             /* respect container width */
+      white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      max-width: 100%;
       box-sizing: border-box;
-      font-family: monospace;
-      max-height: 400px;           /* limit height with scroll */
+      font-family: 'Inter', sans-serif; /* Changed for better readability */
+      max-height: 400px;
       overflow-y: auto;
     }
-
-    #description h3, #doc-summary h3, #audio-transcript h3 {
-      margin-top: 1.5rem;
-      color: #111827;
-      font-size: 1.25rem;
+    
+    #description p, #doc-summary p, #audio-transcript p {
+        margin: 0 0 0.75em 0; /* Add some space between paragraphs */
     }
-
-    #description ul, #doc-summary ul, #audio-transcript ul {
-      margin-left: 1.5rem;
-    }
-
-    #description li, #doc-summary li, #audio-transcript li {
-      margin-bottom: 0.5rem;
+    
+    #description strong, #doc-summary strong, #audio-transcript strong {
+        color: #111827; /* Make speaker name darker */
     }
 
     #loading, #doc-loading, #audio-loading {
@@ -127,7 +121,7 @@
 </head>
 <body>
   <header>
-    <h1>Plivo-chan</h1>
+    <h1>Mizu</h1>
     <nav>
       <a onclick="showSection('image')">Image Summariser</a>
       <a onclick="showSection('doc')">Doc Analysis</a>
@@ -165,7 +159,7 @@
   </main>
 
   <footer>
-    &copy; 2025 Plivo-chan. All rights reserved.
+    &copy; 2025 Mizu. All rights reserved.
   </footer>
 
   <script>
@@ -180,38 +174,17 @@
       document.getElementById('doc-loading').innerText = "";
       document.getElementById('doc-summary').innerHTML = "";
       document.getElementById('audio-loading').innerText = "";
-      document.getElementById('audio-transcript').textContent = "";
+      document.getElementById('audio-transcript').innerHTML = "";
     }
 
     function formatDescription(text) {
-      const lines = text.split('\n').map(line => line.trim()).filter(Boolean);
-      let html = '';
-      let inList = false;
+        if (!text) return "";
 
-      lines.forEach(line => {
-        if (line.startsWith('**') && line.endsWith('**')) {
-          if (inList) {
-            html += '</ul>';
-            inList = false;
-          }
-          html += `<h3>${line.replace(/\*\*/g, '')}</h3>`;
-        } else if (line.startsWith('* ')) {
-          if (!inList) {
-            html += '<ul>';
-            inList = true;
-          }
-          html += `<li>${line.slice(2)}</li>`;
-        } else {
-          if (inList) {
-            html += '</ul>';
-            inList = false;
-          }
-          html += `<p>${line}</p>`;
-        }
-      });
-
-      if (inList) html += '</ul>';
-      return html;
+        // Replace markdown-style bold with <strong> tags, then wrap in paragraphs
+        const boldedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        const paragraphs = boldedText.split('\n').filter(p => p.trim() !== '').map(p => `<p>${p.trim()}</p>`).join('');
+        
+        return paragraphs;
     }
 
     async function uploadImage() {
@@ -232,18 +205,13 @@
       desc.innerHTML = "";
 
       try {
-        const res = await fetch("/describe", {
-          method: "POST",
-          body: formData
-        });
-
+        const res = await fetch("/describe", { method: "POST", body: formData });
         const data = await res.json();
         loading.innerText = "";
-
-        if (data.description) {
+        if (data.success && data.description) {
           desc.innerHTML = formatDescription(data.description);
         } else {
-          desc.innerHTML = `<p style="color: red;">${data.error}</p>`;
+          desc.innerHTML = `<p style="color: red;">${data.error || 'Failed to get a description.'}</p>`;
         }
       } catch (err) {
         loading.innerText = "";
@@ -269,18 +237,13 @@
       summary.innerHTML = "";
 
       try {
-        const res = await fetch("/analyze-pdf", {
-          method: "POST",
-          body: formData
-        });
-
+        const res = await fetch("/analyze-pdf", { method: "POST", body: formData });
         const data = await res.json();
         loading.innerText = "";
-
-        if (data.summary) {
+        if (data.success && data.summary) {
           summary.innerHTML = formatDescription(data.summary);
         } else {
-          summary.innerHTML = `<p style="color: red;">${data.error}</p>`;
+          summary.innerHTML = `<p style="color: red;">${data.error || 'Failed to get a summary.'}</p>`;
         }
       } catch (err) {
         loading.innerText = "";
@@ -294,7 +257,7 @@
       const transcriptDiv = document.getElementById('audio-transcript');
 
       if (!fileInput.files.length) {
-        transcriptDiv.textContent = "Please select an audio file first.";
+        transcriptDiv.innerHTML = "<p>Please select an audio file first.</p>";
         return;
       }
 
@@ -303,21 +266,35 @@
       formData.append("file", file);
 
       loading.textContent = "Transcribing audio...";
-      transcriptDiv.textContent = "";
+      transcriptDiv.innerHTML = "";
 
       try {
-        const res = await fetch("/analyze-audio", {
-          method: "POST",
-          body: formData
-        });
-
+        const res = await fetch("/analyze-audio", { method: "POST", body: formData });
         const data = await res.json();
         loading.textContent = "";
 
-        if (data.transcript) {
-          transcriptDiv.textContent = data.transcript;
+        let transcriptData = data.transcript;
+
+        if (typeof transcriptData === 'string') {
+          try {
+            transcriptData = JSON.parse(transcriptData);
+          } catch (e) {
+            // Not JSON, treat as plain text
+          }
+        }
+
+        if (data.success && Array.isArray(transcriptData)) {
+          let html = '';
+          for (const segment of transcriptData) {
+            if (segment.speaker && segment.text) {
+              html += `<p><strong>${segment.speaker}:</strong> ${segment.text}</p>`;
+            }
+          }
+          transcriptDiv.innerHTML = html;
+        } else if (data.success && typeof transcriptData === 'string') {
+          transcriptDiv.innerHTML = `<p>${transcriptData}</p>`;
         } else {
-          transcriptDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+          transcriptDiv.innerHTML = `<p style="color: red;">${data.error || 'Failed to get a valid transcript.'}</p>`;
         }
       } catch (err) {
         loading.textContent = "";

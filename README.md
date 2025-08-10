@@ -84,10 +84,10 @@ A powerful AI-powered web application that provides intelligent analysis for ima
 4. View structured summaries with key insights and document purpose
 
 #### Audio Transcription
-1. Click on "Audio Analysis" in the navigation
-2. Upload an audio file (WAV, MP3, etc.)
-3. Click "Transcribe" to convert speech to text
-4. View the transcribed text output
+1. Click on "Audio Analysis" in the navigation.
+2. Upload an audio file (WAV, MP3, etc.).
+3. Click "Transcribe" to initiate the transcription process using Google Gemini, which includes speaker diarization.
+4. View the transcribed text output as JSON, structured with speaker information, start and end times.
 
 ## API Endpoints
 
@@ -108,10 +108,10 @@ A powerful AI-powered web application that provides intelligent analysis for ima
 - **Response**: JSON with document summary or error
 
 ### `POST /analyze-audio`
-- **Description**: Transcribes audio files to text
+- **Description**: Transcribes audio files to text using Google Gemini, including speaker diarization. Returns a JSON array of objects, each containing speaker, start time, end time, and transcribed text.
 - **Parameters**: 
   - `file`: Audio file (multipart/form-data)
-- **Response**: JSON with transcript or error
+- **Response**: JSON array of transcription segments with speaker diarization.
 
 ## Deployment
 
