@@ -4,8 +4,7 @@ python-multipart
 aiofiles
 jinja2
 requests
-pillow
-google-generativeai
+google-genai
 pymupdf
 speechrecognition
 

@@ -4,7 +4,6 @@ from fastapi.templating import Jinja2Templates
 
 # import google.generativeai as genai
 from google import genai
-from PIL import Image
 import io
 import fitz  # PyMuPDF
 import tempfile
