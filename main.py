@@ -13,7 +13,7 @@ import requests
 from google.genai import types
 import json
 # genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-client = genai.Client(api_key=os.getenv["GEMINI_API_KEY"])
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
