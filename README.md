@@ -1,4 +1,4 @@
-# Plivo-chan 🤖
+# Mizu 🤖
 
 A powerful AI-powered web application that provides intelligent analysis for images, PDF documents, and audio files using Google's Gemini AI model.
 
