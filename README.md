@@ -31,8 +31,8 @@ A powerful AI-powered web application that provides intelligent analysis for ima
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/AbhinandIITM/Plivo-chan.git
-   cd Plivo-chan
+   git clone https://github.com/AbhinandIITM/Mizu.git
+   cd Mizu
    ```
 
 2. **Install dependencies**
@@ -140,7 +140,7 @@ For other platforms, ensure you:
 ## File Structure
 
 ```
-Plivo-chan/
+Mizu/
 ├── main.py                 # FastAPI application
 ├── requirements.txt        # Python dependencies
 ├── render.yaml            # Render.com deployment config
@@ -188,7 +188,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 If you encounter any issues or have questions:
-1. Check the [Issues](https://github.com/AbhinandIITM/Plivo-chan/issues) page
+1. Check the [Issues](https://github.com/AbhinandIITM/Mizu/issues) page
 2. Create a new issue with detailed information
 3. Provide error messages and steps to reproduce
 
